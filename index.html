@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extensive Z — Powerful Chrome Extension</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080d1a;
+      --surface: #0e1628;
+      --surface-2: #141e33;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-2: #22d3ee;
+      --text: #f0f2f8;
+      --text-muted: #6b7280;
+      --border: rgba(255,255,255,0.08);
+      --glass: rgba(14,22,40,0.8);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      background-image: radial-gradient(ellipse at 15% 40%, rgba(99,102,241,0.1) 0%, transparent 55%),
+                        radial-gradient(ellipse at 85% 15%, rgba(34,211,238,0.08) 0%, transparent 50%);
+    }
+    a { text-decoration: none; color: inherit; }
+    
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,13,26,0.8); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+    }
+    .logo { font-weight: 800; font-size: 1.2rem; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: white; border: none; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-outline { border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(99,102,241,0.1); }
+    
+    /* Hero */
+    .hero { text-align: center; padding: 100px 20px; max-width: 800px; margin: 0 auto; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(99,102,241,0.15); color: var(--accent-2); border-radius: 99px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; border: 1px solid rgba(34,211,238,0.2); }
+    h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+    .hero p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; }
+    .hero-ctas { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+    
+    /* Features */
+    .section { padding: 80px 5%; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; font-size: 2.2rem; font-weight: 800; margin-bottom: 50px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px; padding: 25px; transition: 0.3s; }
+    .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card-icon { font-size: 2rem; margin-bottom: 15px; display: inline-block; }
+    .card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+    .card p { color: var(--text-muted); font-size: 0.95rem; }
+    
+    /* Gallery */
+    .gallery-section { padding: 80px 5%; max-width: 1200px; margin: 0 auto; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+    .gallery-img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); transition: 0.3s; cursor: pointer; }
+    .gallery-img:hover { transform: scale(1.03); border-color: var(--accent); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+    
+    /* Detailed Features */
+    .detail-section { padding: 60px 5%; max-width: 1000px; margin: 0 auto 80px; background: rgba(14,22,40,0.4); border-radius: 20px; border: 1px solid var(--border); }
+    .feature-row { display: flex; flex-wrap: wrap; gap: 40px; margin-bottom: 60px; align-items: center; }
+    .feature-row:last-child { margin-bottom: 0; }
+    .feature-row:nth-child(even) { flex-direction: row-reverse; }
+    .feature-text { flex: 1; min-width: 300px; }
+    .feature-text h3 { font-size: 1.8rem; margin-bottom: 15px; color: var(--accent-2); }
+    .feature-text p { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 15px; }
+    .feature-text ul { list-style-type: none; padding-left: 0; color: var(--text-muted); }
+    .feature-text li { margin-bottom: 8px; position: relative; padding-left: 20px; }
+    .feature-text li::before { content: '✓'; position: absolute; left: 0; color: var(--accent); }
+    
+    /* Installation */
+    .install-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; max-width: 800px; margin: 0 auto; }
+    .step { display: flex; gap: 20px; margin-bottom: 30px; }
+    .step:last-child { margin-bottom: 0; }
+    .step-num { width: 40px; height: 40px; background: rgba(99,102,241,0.15); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; font-size: 1.2rem; border: 1px solid rgba(99,102,241,0.3); }
+    .step-content h4 { font-size: 1.1rem; margin-bottom: 8px; }
+    .step-content p { color: var(--text-muted); margin-bottom: 10px; }
+    code { background: var(--surface-2); padding: 4px 8px; border-radius: 6px; font-family: monospace; color: var(--accent-2); font-size: 0.9em; }
+    
+    /* Footer */
+    footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--border); margin-top: 80px; color: var(--text-muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">⚡ Extensive Z</div>
+    <a href="https://github.com/yourusername/extensive-z/archive/refs/heads/main.zip" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Get Extension</a>
+  </nav>
+
+  <div class="hero">
+    <div class="badge">✨ Version 2.0 is out now</div>
+    <h1>The Ultimate Productivity Dashboard for Chrome</h1>
+    <p>Extensive Z transforms your new tab into a powerful, glassmorphic workspace. Built-in ad blocking, focus timers, split-view multitasking, and customizable widgets.</p>
+    <div class="hero-ctas">
+      <a href="https://github.com/yourusername/extensive-z/archive/refs/heads/main.zip" class="btn btn-primary">
+        <span>⬇️</span> Download ZIP
+      </a>
+      <a href="https://github.com/yourusername/extensive-z" target="_blank" class="btn btn-outline">
+        <span>⭐</span> View on GitHub
+      </a>
+    </div>
+  </div>
+
+  <div class="section" id="install">
+    <h2 class="section-title">How to Install</h2>
+    <div class="install-box">
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Because Google charges $5 to host on the Chrome Web Store, Extensive Z is provided completely free and open-source via GitHub. It takes just 30 seconds to install.</p>
+      
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Download the Extension</h4>
+          <p>Click the <strong>Get Extension</strong> or <strong>Download ZIP</strong> button above to get the latest version of the extension source code.</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Extract the ZIP</h4>
+          <p>Locate the downloaded file and extract (unzip) it to a folder on your computer (e.g., your Documents or Desktop).</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Open Chrome Extensions</h4>
+          <p>In Google Chrome, type <code>chrome://extensions/</code> in your address bar and press Enter.</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Enable Developer Mode</h4>
+          <p>Turn on the <strong>Developer mode</strong> toggle switch located in the top-right corner of the Extensions page.</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>Load the Extension</h4>
+          <p>Click the <strong>Load unpacked</strong> button in the top-left corner. Select the <strong>extension</strong> folder located inside the folder you extracted in Step 2. That's it! Open a new tab to see your new dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Everything you need, built right in.</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <h3>Built-in Ad Blocker</h3>
+        <p>Browse cleaner and faster. Automatically blocks 48+ known ad and tracker networks at the network level using Manifest V3.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🪟</span>
+        <h3>Split View Multitasking</h3>
+        <p>Instantly tile your windows side-by-side. Choose from 50/50, 60/40, or top/bottom splits directly from the extension popup.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🍅</span>
+        <h3>Focus & Pomodoro</h3>
+        <p>Stay productive with integrated focus timers. Blocks distracting sites automatically while a focus session is active.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎨</span>
+        <h3>Glassmorphic Dashboard</h3>
+        <p>A stunning replacement for your new tab page. Includes 8 themes, custom gradients, and 14 premium HD wallpapers.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">💾</span>
+        <h3>Tab Sessions & Clusters</h3>
+        <p>Save groups of tabs and restore them later with one click. Organize your workflow into custom clusters.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📊</span>
+        <h3>Smart Widgets</h3>
+        <p>Weather, Live Crypto/Gold prices, Calculator, Unit Converter, Notes, and Internet Speed Test — all a click away.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery-section" id="gallery">
+    <h2 class="section-title">Screenshots & UI Showcase</h2>
+    <div class="gallery-grid">
+      <img src="ss1.png" alt="Dashboard View" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+1'">
+      <img src="ss2.png" alt="Settings Menu" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+2'">
+      <img src="ss3.png" alt="Ad Blocker Settings" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+3'">
+      <img src="ss4.png" alt="Pomodoro Timer" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+4'">
+      <img src="ss5.png" alt="Split View Multitasking" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+5'">
+      <img src="ss6.png" alt="Tab Clusters" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+6'">
+      <img src="ss7.png" alt="Dark Mode" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+7'">
+      <img src="ss8.png" alt="Widget Customization" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+8'">
+      <img src="ss9.png" alt="Live Weather" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+9'">
+      <img src="ss10.png" alt="Crypto & Gold Tracker" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+10'">
+      <img src="ss11.png" alt="Unit & Currency Converter" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+11'">
+      <img src="ss12.png" alt="Password Lock Feature" class="gallery-img" onerror="this.src='https://via.placeholder.com/600x400/141e33/6366f1?text=Screenshot+12'">
+    </div>
+  </div>
+
+  <div class="detail-section" id="features-detail">
+    <div class="feature-row">
+      <div class="feature-text">
+        <h3>Master Your Workflow with Split View</h3>
+        <p>No more manually resizing windows. The built-in Split View feature allows you to instantly tile your Chrome windows side-by-side.</p>
+        <ul>
+          <li>Access via the "Tools" > "Split" tab in the popup</li>
+          <li>Choose from 50/50, 60/40, or 40/60 horizontal splits</li>
+          <li>Top/Bottom vertical split for ultra-wide monitors</li>
+          <li>One-click restore to maximize your window</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="feature-row">
+      <div class="feature-text">
+        <h3>Pomodoro & Focus Mode</h3>
+        <p>Stay in the zone by setting customized focus timers. Extensive Z helps you manage your time effectively.</p>
+        <ul>
+          <li>Preset timers (25, 45, 60 minutes) or custom durations</li>
+          <li>Automatically blocks distracting sites during active focus sessions</li>
+          <li>Visual progress ring and daily Pomodoro counter</li>
+          <li>Alarm notifications when your session is complete</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-text">
+        <h3>Advanced Privacy & Ad Blocking</h3>
+        <p>Extensive Z comes with a powerful network-level ad blocker built using Chrome's modern Manifest V3 declarativeNetRequest API.</p>
+        <ul>
+          <li>Blocks 48+ major ad, tracker, and telemetry domains</li>
+          <li>Manually block any custom website via the popup</li>
+          <li>Temporarily unlock blocked sites with a timer</li>
+          <li>Track how many ad requests were blocked today in the dashboard</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Extensive Z. Free and Open Source.</p>
+  </footer>
+
+</body>
+</html>
