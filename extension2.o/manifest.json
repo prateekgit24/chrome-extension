@@ -3,7 +3,6 @@
   "name": "Extensive Z",
   "version": "2.0",
   "description": "A powerful productivity, privacy, and customisation Chrome extension.",
-
   "permissions": [
     "storage",
     "tabs",
@@ -16,58 +15,77 @@
     "contextMenus",
     "activeTab"
   ],
-
   "host_permissions": [
     "<all_urls>"
   ],
-
   "background": {
     "service_worker": "background.js"
   },
-
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16":  "icon16.jpg",
-      "48":  "icon48.png",
-      "128": "icon128.jpg"
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
     }
   },
-
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["*://www.youtube.com/*", "*://youtube.com/*"],
-      "js": ["yt_adskip.js"],
+      "matches": [
+        "*://www.youtube.com/*",
+        "*://youtube.com/*"
+      ],
+      "js": [
+        "yt_adskip.js"
+      ],
       "run_at": "document_start"
     }
   ],
-
   "options_page": "settings.html",
-
   "web_accessible_resources": [
     {
       "resources": [
-        "lock.html","settings.html","screenshot.html","screenshot.js","animations.js",
-        "bg1.png","bg2.png","bg3.png","bg4.png","bg5.png","bg6.png",
-        "bg7.jpg","bg8.jpg","bg9.jpg","bg10.jpg","bg11.jpg","bg12.jpg","bg13.jpg","bg14.jpg",
-        "bg9.png","bg10.png","bg11.png","bg12.png","bg13.png","bg14.png"
+        "lock.html",
+        "settings.html",
+        "screenshot.html",
+        "screenshot.js",
+        "animations.js",
+        "bg1.png",
+        "bg2.png",
+        "bg3.png",
+        "bg4.png",
+        "bg5.png",
+        "bg6.png",
+        "bg7.png",
+        "bg8.png",
+        "bg9.png",
+        "bg10.png",
+        "bg11.png",
+        "bg12.png",
+        "bg13.png",
+        "bg14.png"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
-
   "icons": {
-    "16":  "icon16.jpg",
-    "48":  "icon48.png",
-    "128": "icon128.jpg"
+    "16": "icon16.png",
+    "32": "icon32.jpg",
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }
