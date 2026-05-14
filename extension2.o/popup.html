@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Extensive Z</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { width:380px; min-height:500px; overflow:hidden; background:var(--bg); }
+
+    /* ── HEADER ── */
+    .popup-header {
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Tab nav */
+    .tab-nav {
+      display: flex;
+      background: var(--surface-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px 2px 8px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      position: relative;
+      transition: color .2s;
+    }
+
+    .tab-btn .ti {
+      font-size: 14px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* Tab panels */
+    .tab-panel {
+      display: none;
+      padding: 14px;
+      max-height: 460px;
+      overflow-y: auto;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn .2s ease;
+    }
+
+    /* Section header */
+    .sh {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin: 12px 0 7px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sh:first-child {
+      margin-top: 0;
+    }
+
+    /* Row */
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ── BLOCK TAB ── */
+    .ad-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, .08), rgba(34, 211, 238, .04));
+      border: 1px solid rgba(99, 102, 241, .2);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ad-card .ttl {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .ad-card .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sites-list {
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .si {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+
+    .si .dom {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .si .ubadge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 99px;
+      background: rgba(16, 185, 129, .15);
+      color: var(--success);
+      white-space: nowrap;
+    }
+
+    .si .rm {
+      width: 20px;
+      height: 20px;
+      background: rgba(248, 113, 113, .1);
+      color: var(--danger);
+      border: none;
+      border-radius: 50%;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--tx);
+    }
+
+    .si .rm:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* ── FOCUS TAB ── */
+    .ring-wrap {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 4px auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-svg {
+      width: 150px;
+      height: 150px;
+      transform: rotate(-90deg);
+      position: absolute;
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: var(--surface-2);
+      stroke-width: 9;
+    }
+
+    .ring-prog {
+      fill: none;
+      stroke: url(#rg);
+      stroke-width: 9;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    .ring-center {
+      position: absolute;
+      text-align: center;
+    }
+
+    .ring-time {
+      font-size: 26px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ring-lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .pom-row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin: 4px 0 10px;
+    }
+
+    .tom {
+      font-size: 15px;
+      opacity: .25;
+      transition: opacity .3s;
+    }
+
+    .tom.done {
+      opacity: 1;
+    }
+
+    .fp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .fc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 7px;
+    }
+
+    /* ── ALARM TAB ── */
+    .alarm-card {
+      background: rgba(99, 102, 241, .08);
+      border: 1px solid rgba(99, 102, 241, .25);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .alarm-cd {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .alarm-lbl-t {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .aq-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    /* ── TOOLS TAB ── */
+    .sub-nav {
+      display: flex;
+      gap: 3px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+
+    .sn-btn {
+      flex: 1;
+      padding: 6px 3px;
+      border-radius: 6px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--tx);
+    }
+
+    .sn-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    }
+
+    .sub-panel {
+      display: none;
+    }
+
+    .sub-panel.active {
+      display: block;
+      animation: fadeIn .2s ease;
+    }
+
+    /* Calculator */
+    .calc-disp {
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 9px;
+      text-align: right;
+    }
+
+    .calc-expr {
+      font-size: 12px;
+      color: var(--text-muted);
+      min-height: 15px;
+      word-break: break-all;
+    }
+
+    .calc-res {
+      font-size: 22px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      margin-top: 1px;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+
+    .cb {
+      padding: 12px 4px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--tx);
+      font-family: inherit;
+    }
+
+    .cb:hover {
+      background: var(--surface);
+    }
+
+    .cb:active {
+      transform: scale(.95);
+    }
+
+    .cb.op {
+      color: var(--accent-2);
+    }
+
+    .cb.eq {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .cb.eq:hover {
+      background: var(--accent-hover);
+    }
+
+    .cb.clr {
+      color: var(--danger);
+    }
+
+    .cb.w2 {
+      grid-column: span 2;
+    }
+
+    /* Converter */
+    .conv-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+
+    .conv-arrow {
+      color: var(--text-muted);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .conv-res {
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .conv-res small {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ── SPLIT VIEW ── */
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    .split-preset {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 6px 8px;
+      cursor: pointer;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+      transition: var(--tx3);
+    }
+    .split-preset:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(99,102,241,.08);
+    }
+    .split-preset.active {
+      border-color: var(--accent);
+      background: rgba(99,102,241,.15);
+      color: var(--accent);
+      box-shadow: 0 0 10px rgba(99,102,241,.2);
+    }
+    .sp-visual {
+      display: flex;
+      gap: 2px;
+      height: 28px;
+      margin: 0 auto 5px;
+      width: 48px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .sp-l, .sp-r { flex: 1; }
+    .sp-l { background: rgba(99,102,241,.55); }
+    .sp-r { background: rgba(34,211,238,.35); }
+    .sp-visual.sp-vertical { flex-direction: column; }
+    .sp-t, .sp-b { flex: 1; }
+    .sp-t { background: rgba(99,102,241,.55); }
+    .sp-b { background: rgba(34,211,238,.35); }
+
+    /* ── LIBRARY TAB ── */
+    .lib-sub {
+      display: flex;
+      gap: 3px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+
+    .sess-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 9px 11px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 5px;
+      transition: var(--tx);
+    }
+
+    .sess-item:hover {
+      border-color: var(--border-2);
+    }
+
+    .sess-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .sess-name {
+      font-size: 13px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sess-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .cl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .cl-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px;
+      cursor: pointer;
+      transition: var(--tx3);
+    }
+
+    .cl-card:hover {
+      border-color: var(--border-2);
+      transform: translateY(-2px);
+    }
+
+    .cl-emoji {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+
+    .cl-name {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .cl-favs {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+
+    .cl-fav {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+    }
+
+    .cl-cnt {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .create-form {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .emoji-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin: 7px 0;
+    }
+
+    .ep {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--tx);
+    }
+
+    .ep.sel,
+    .ep:hover {
+      border-color: var(--accent);
+      background: rgba(99, 102, 241, .1);
+    }
+
+    .url-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 6px 0;
+      min-height: 24px;
+    }
+
+    .utag {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(99, 102, 241, .1);
+      border: 1px solid rgba(99, 102, 241, .2);
+      border-radius: 99px;
+      padding: 2px 7px;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .utag button {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 10px;
+      padding: 0;
+      line-height: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="popup-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(99,102,241,.06),transparent);position:relative;">
+    <div class="logo">⚡ Extensive Z</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button id="screenshotBtn" title="Screenshot active tab"
+        style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;">
+        📸
+      </button>
+      <button style="background:none;border:none;font-size:17px;cursor:pointer;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s;" id="settingsBtn"
+        title="Settings">⚙️</button>
+    </div>
+    <div id="screenshotMsg" style="display:none;position:absolute;top:100%;right:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text-muted);white-space:nowrap;z-index:100;box-shadow:var(--shadow-sm);"></div>
+  </header>
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="block"><span class="ti">🚫</span>Block</button>
+    <button class="tab-btn" data-tab="focus"><span class="ti">🍅</span>Focus</button>
+    <button class="tab-btn" data-tab="alarm"><span class="ti">⏰</span>Alarm</button>
+    <button class="tab-btn" data-tab="tools"><span class="ti">🔧</span>Tools</button>
+    <button class="tab-btn" data-tab="library"><span class="ti">📁</span>Library</button>
+  </nav>
+
+  <!-- ═══════════ BLOCK TAB ═══════════ -->
+  <div class="tab-panel active" id="tab-block">
+    <div class="ad-card">
+      <div>
+        <div class="ttl">🛡️ Ad Blocker</div>
+        <div class="sub" id="adSub">Loading…</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="adToggle"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="sh">Block a Website</div>
+    <div class="row" style="margin-bottom:11px">
+      <input id="siteInput" type="text" placeholder="facebook.com" style="flex:1" />
+      <button class="btn btn-primary btn-sm" id="addSiteBtn">+ Block</button>
+    </div>
+    <div class="sh">Blocked Sites <span class="badge badge-accent" id="siteCount" style="margin-left:auto">0</span>
+    </div>
+    <div class="sites-list" id="sitesList">
+      <div class="empty">No sites blocked yet</div>
+    </div>
+    <div id="unlockSection" style="display:none">
+      <div class="sh" style="color:var(--success)">🔓 Active Unlocks</div>
+      <div id="unlockList"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ FOCUS TAB ═══════════ -->
+  <div class="tab-panel" id="tab-focus">
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6366f1" />
+            <stop offset="100%" stop-color="#22d3ee" />
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="60" cy="60" r="52" />
+        <circle class="ring-prog" cx="60" cy="60" r="52" id="focusRing"
+          style="stroke-dasharray:326.73;stroke-dashoffset:0" />
+      </svg>
+      <div class="ring-center">
+        <div class="ring-time" id="focusDisplay">25:00</div>
+        <div class="ring-lbl" id="focusLbl">Ready</div>
+      </div>
+    </div>
+    <div class="pom-row" id="pomRow">
+      <span class="tom">🍅</span><span class="tom">🍅</span>
+      <span class="tom">🍅</span><span class="tom">🍅</span>
+    </div>
+    <div class="sh">Duration</div>
+    <div class="fp-grid">
+      <button class="preset-btn active" data-fm="25">25 min</button>
+      <button class="preset-btn" data-fm="45">45 min</button>
+      <button class="preset-btn" data-fm="60">60 min</button>
+      <button class="preset-btn" data-fm="0">Custom</button>
+    </div>
+    <div id="focusCustomRow" style="display:none;margin-bottom:9px">
+      <input type="number" id="focusCustom" placeholder="Minutes (1–180)" min="1" max="180" />
+    </div>
+    <div class="fc-grid">
+      <button class="btn btn-primary" id="focusStart">▶ Start</button>
+      <button class="btn btn-ghost" id="focusPause" disabled>⏸ Pause</button>
+      <button class="btn btn-danger" id="focusStop" disabled>■ Stop</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ ALARM TAB ═══════════ -->
+  <div class="tab-panel" id="tab-alarm">
+    <div class="alarm-card" id="alarmCard" style="display:none">
+      <div class="alarm-cd" id="alarmCd">00:00</div>
+      <div class="alarm-lbl-t" id="alarmLblT">Timer</div>
+    </div>
+    <div class="sh">Set Timer Alarm</div>
+    <div class="row" style="margin-bottom:9px;gap:8px">
+      <input type="number" id="alarmMins" placeholder="Minutes" min="1" max="1440" style="flex:1" />
+      <input type="text" id="alarmLabel" placeholder="Label (optional)" maxlength="30" style="flex:1.4" />
+    </div>
+    <div class="row" style="gap:8px;margin-bottom:14px">
+      <button class="btn btn-primary" id="setAlarmBtn" style="flex:1">🔔 Set Alarm</button>
+      <button class="btn btn-danger" id="clearAlarmBtn" style="flex:1">✕ Clear</button>
+    </div>
+    <div class="sh">Quick Presets</div>
+    <div class="aq-grid">
+      <button class="preset-btn" data-alarm="5">5 min</button>
+      <button class="preset-btn" data-alarm="10">10 min</button>
+      <button class="preset-btn" data-alarm="15">15 min</button>
+      <button class="preset-btn" data-alarm="20">20 min</button>
+      <button class="preset-btn" data-alarm="30">30 min</button>
+      <button class="preset-btn" data-alarm="60">1 hr</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ TOOLS TAB ═══════════ -->
+  <div class="tab-panel" id="tab-tools">
+    <div class="sub-nav">
+      <button class="sn-btn active" data-sub="calc">🔢 Calc</button>
+      <button class="sn-btn" data-sub="unit">📐 Units</button>
+      <button class="sn-btn" data-sub="currency">💱 Currency</button>
+      <button class="sn-btn" data-sub="split">🪟 Split</button>
+    </div>
+
+    <!-- Calculator -->
+    <div class="sub-panel active" id="sub-calc">
+      <div class="calc-disp">
+        <div class="calc-expr" id="calcExpr">&nbsp;</div>
+        <div class="calc-res" id="calcRes">0</div>
+      </div>
+      <div class="calc-grid">
+        <button class="cb clr" data-c="C">C</button>
+        <button class="cb" data-c="back">⌫</button>
+        <button class="cb op" data-c="%">%</button>
+        <button class="cb op" data-c="/">÷</button>
+        <button class="cb" data-c="7">7</button>
+        <button class="cb" data-c="8">8</button>
+        <button class="cb" data-c="9">9</button>
+        <button class="cb op" data-c="*">×</button>
+        <button class="cb" data-c="4">4</button>
+        <button class="cb" data-c="5">5</button>
+        <button class="cb" data-c="6">6</button>
+        <button class="cb op" data-c="-">−</button>
+        <button class="cb" data-c="1">1</button>
+        <button class="cb" data-c="2">2</button>
+        <button class="cb" data-c="3">3</button>
+        <button class="cb op" data-c="+">+</button>
+        <button class="cb w2" data-c="0">0</button>
+        <button class="cb" data-c=".">.</button>
+        <button class="cb eq" data-c="=">=</button>
+      </div>
+    </div>
+
+    <!-- Unit Converter -->
+    <div class="sub-panel" id="sub-unit">
+      <div class="sub-nav" style="margin-bottom:10px">
+        <button class="sn-btn active" data-unit="length">Length</button>
+        <button class="sn-btn" data-unit="weight">Weight</button>
+        <button class="sn-btn" data-unit="temp">Temp</button>
+        <button class="sn-btn" data-unit="volume">Volume</button>
+      </div>
+      <div class="conv-row">
+        <input type="number" id="unitVal" placeholder="Value" style="flex:1" />
+        <select id="unitFrom" style="flex:1"></select>
+        <span class="conv-arrow">→</span>
+        <select id="unitTo" style="flex:1"></select>
+      </div>
+      <div class="conv-res" id="unitRes">—<small id="unitResLbl"></small></div>
+    </div>
+
+    <!-- Currency Converter -->
+    <div class="sub-panel" id="sub-currency">
+      <div class="conv-row">
+        <input type="number" id="currVal" placeholder="Amount" style="flex:1" />
+        <select id="currFrom" style="flex:1"></select>
+        <span class="conv-arrow">→</span>
+        <select id="currTo" style="flex:1"></select>
+      </div>
+      <div class="conv-res" id="currRes">—<small id="currResLbl">Enter amount above</small></div>
+      <p style="font-size:10px;color:var(--text-dim);margin-top:8px;text-align:center" id="currUpdated"></p>
+      <button class="btn btn-ghost btn-sm" id="refreshRates" style="width:100%;margin-top:6px">↻ Refresh Rates</button>
+    </div>
+
+    <!-- Split View -->
+    <div class="sub-panel" id="sub-split">
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">
+        🪟 <strong style="color:var(--text)">Split View</strong> tiles your current window
+        to one half and opens a new Chrome window on the other half — giving you two
+        side-by-side browsing panes.
+      </div>
+
+      <div class="sh" style="margin-top:0">Layout Preset</div>
+      <div class="split-grid" id="splitPresets">
+        <button class="split-preset active" data-ratio="50" data-dir="h" id="sp-5050">
+          <span class="sp-visual"><span class="sp-l"></span><span class="sp-r"></span></span>
+          Left / Right<br><small>50 · 50</small>
+        </button>
+        <button class="split-preset" data-ratio="60" data-dir="h" id="sp-6040">
+          <span class="sp-visual"><span class="sp-l" style="flex:1.5"></span><span class="sp-r"></span></span>
+          Left / Right<br><small>60 · 40</small>
+        </button>
+        <button class="split-preset" data-ratio="40" data-dir="h" id="sp-4060">
+          <span class="sp-visual"><span class="sp-l" style="flex:.67"></span><span class="sp-r"></span></span>
+          Left / Right<br><small>40 · 60</small>
+        </button>
+        <button class="split-preset" data-ratio="50" data-dir="v" id="sp-topbot">
+          <span class="sp-visual sp-vertical"><span class="sp-t"></span><span class="sp-b"></span></span>
+          Top / Bottom<br><small>50 · 50</small>
+        </button>
+      </div>
+
+      <button class="btn btn-primary" id="splitViewBtn" style="width:100%;margin-top:12px">🪟 Apply Split View</button>
+      <button class="btn btn-ghost btn-sm" id="splitRestoreBtn" style="width:100%;margin-top:6px">⛶ Restore / Maximise Window</button>
+      <div id="splitMsg" style="font-size:11px;color:var(--text-muted);margin-top:8px;text-align:center;min-height:16px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LIBRARY TAB ═══════════ -->
+  <div class="tab-panel" id="tab-library">
+    <div class="lib-sub sub-nav">
+      <button class="sn-btn active" data-sub="sessions">💾 Sessions</button>
+      <button class="sn-btn" data-sub="clusters">🗂 Clusters</button>
+    </div>
+
+    <!-- Sessions -->
+    <div class="sub-panel active" id="sub-sessions">
+      <div class="row" style="margin-bottom:10px;gap:8px">
+        <input type="text" id="sessName" placeholder="Session name" style="flex:1" />
+        <button class="btn btn-primary btn-sm" id="saveSessionBtn">💾 Save Tabs</button>
+      </div>
+      <div id="sessList">
+        <div class="empty">No saved sessions yet</div>
+      </div>
+    </div>
+
+    <!-- Clusters -->
+    <div class="sub-panel" id="sub-clusters">
+      <div id="clGrid" class="cl-grid"></div>
+      <!-- Create Cluster -->
+      <details style="margin-top:4px">
+        <summary style="cursor:pointer;font-size:12px;color:var(--accent);padding:6px 0;list-style:none">+ Create New
+          Cluster</summary>
+        <div class="create-form" style="margin-top:8px">
+          <input type="text" id="clName" placeholder="Cluster name (e.g. Work)" style="margin-bottom:7px" />
+          <div class="label">Choose Emoji</div>
+          <div class="emoji-row" id="emojiRow">
+            <span class="ep sel" data-e="🗂">🗂</span><span class="ep" data-e="💼">💼</span>
+            <span class="ep" data-e="📚">📚</span><span class="ep" data-e="🎮">🎮</span>
+            <span class="ep" data-e="🎵">🎵</span><span class="ep" data-e="🛒">🛒</span>
+            <span class="ep" data-e="🏋️">🏋️</span><span class="ep" data-e="🌐">🌐</span>
+            <span class="ep" data-e="🔬">🔬</span><span class="ep" data-e="🎨">🎨</span>
+          </div>
+          <div class="label">Add URLs</div>
+          <div class="url-tags" id="urlTags"></div>
+          <div class="row" style="gap:6px;margin-top:4px">
+            <input type="text" id="clUrlInput" placeholder="example.com" style="flex:1" />
+            <button class="btn btn-ghost btn-sm" id="addClUrl">+ Add</button>
+          </div>
+          <button class="btn btn-primary" id="saveCluster" style="width:100%;margin-top:10px">Create Cluster</button>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>

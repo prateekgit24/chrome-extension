@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Screenshot — Extensive Z</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0d0d0d; font-family:Inter,system-ui,sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+  #toolbar {
+    width:100%; padding:12px 20px; background:rgba(255,255,255,.05);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    display:flex; align-items:center; gap:12px;
+    position:sticky; top:0; z-index:10; backdrop-filter:blur(10px);
+  }
+  #ssInfo { color:#6b7280; font-size:13px; flex:1; }
+  .tbtn {
+    padding:7px 16px; border-radius:8px; font-size:13px; font-weight:500;
+    cursor:pointer; border:none; transition:all .18s; text-decoration:none;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  #dlBtn  { background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; }
+  #dlBtn:hover { box-shadow:0 0 20px rgba(99,102,241,.5); transform:translateY(-1px); }
+  #copyBtn { background:rgba(255,255,255,.07); color:#d1d5db; border:1px solid rgba(255,255,255,.1); }
+  #copyBtn:hover { background:rgba(255,255,255,.12); }
+  #imgWrap { padding:24px; max-width:1600px; width:100%; }
+  #screenshot { max-width:100%; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.6); display:none; }
+  #status { color:#6b7280; margin-top:60px; font-size:16px; text-align:center; line-height:1.7; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <span id="ssInfo">📸 Screenshot — Extensive Z</span>
+  <button class="tbtn" id="copyBtn">📋 Copy Image</button>
+  <a class="tbtn" id="dlBtn" href="#" download="screenshot.png">⬇ Download PNG</a>
+</div>
+<div id="imgWrap">
+  <div id="status">⏳ Loading screenshot…</div>
+  <img id="screenshot" alt="Screenshot"/>
+</div>
+<script src="screenshot.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — Extensive Z</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    .settings-header {
+      margin-bottom: 32px;
+    }
+
+    .settings-header h1 {
+      font-size: 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .settings-header p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .settings-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .settings-section h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .setting-row:first-child {
+      padding-top: 0;
+    }
+
+    .setting-info .ttl {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .setting-info .sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Theme Picker */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .theme-swatch {
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      border: 2px solid transparent;
+      transition: var(--tx3);
+    }
+
+    .theme-swatch:hover,
+    .theme-swatch.active {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .3);
+    }
+
+    .theme-swatch .preview {
+      height: 36px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .theme-swatch .name {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    /* Gradient picker */
+    .gradient-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .gradient-preview {
+      flex: 1;
+      min-width: 100px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      transition: var(--tx3);
+    }
+
+    /* Upload */
+    .upload-area {
+      border: 2px dashed var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--tx3);
+      margin-top: 8px;
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(99, 102, 241, .05);
+    }
+
+    .upload-area p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    #bgPreview {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Password */
+    .pwd-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Widget toggles */
+    .widget-toggles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .wt-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+
+    /* Radio group */
+    .radio-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .radio-btn {
+      padding: 7px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--tx);
+    }
+
+    .radio-btn.active {
+      background: rgba(99, 102, 241, .15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Data management */
+    .data-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    /* Wallpaper grid */
+    .wp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .wp-thumb {
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all .2s;
+      aspect-ratio: 16/9;
+      position: relative;
+    }
+
+    .wp-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .wp-thumb:hover {
+      border-color: var(--border-2);
+      transform: scale(1.03);
+    }
+
+    .wp-thumb.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .wp-thumb .wp-num {
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 9px;
+      background: rgba(0, 0, 0, .6);
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* URL input */
+    .url-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .url-row input {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .url-row input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Animation picker */
+    .anim-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .anim-btn {
+      padding: 10px 6px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+    }
+
+    .anim-btn:hover {
+      border-color: var(--border-2);
+      color: var(--text);
+    }
+
+    .anim-btn.active {
+      background: rgba(99, 102, 241, .15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .anim-btn .anim-icon {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* Status toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--success);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s ease;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="settings-header">
+    <h1>⚙️ Extensive Z Settings</h1>
+    <p>Customise your extension experience</p>
+  </div>
+
+  <!-- ── THEME ── -->
+  <div class="settings-section">
+    <h2>🎨 Theme & Background</h2>
+
+    <div class="label">Preset Themes</div>
+    <div class="theme-grid" id="themeGrid">
+      <div class="theme-swatch active" data-theme="deepocean">
+        <div class="preview" style="background:linear-gradient(135deg,#0a0f1e,#1e293b)"></div>
+        <div class="name">Deep Ocean</div>
+      </div>
+      <div class="theme-swatch" data-theme="midnight">
+        <div class="preview" style="background:linear-gradient(135deg,#1a0533,#2d1054)"></div>
+        <div class="name">Midnight</div>
+      </div>
+      <div class="theme-swatch" data-theme="forest">
+        <div class="preview" style="background:linear-gradient(135deg,#0d1f0d,#1a3320)"></div>
+        <div class="name">Forest Night</div>
+      </div>
+      <div class="theme-swatch" data-theme="synthwave">
+        <div class="preview" style="background:linear-gradient(135deg,#1a0533,#ff006640)"></div>
+        <div class="name">Synthwave</div>
+      </div>
+      <div class="theme-swatch" data-theme="slate">
+        <div class="preview" style="background:linear-gradient(135deg,#0f172a,#334155)"></div>
+        <div class="name">Slate Gray</div>
+      </div>
+      <div class="theme-swatch" data-theme="nord">
+        <div class="preview" style="background:linear-gradient(135deg,#2e3440,#3b4252)"></div>
+        <div class="name">Nord</div>
+      </div>
+      <div class="theme-swatch" data-theme="rosedark">
+        <div class="preview" style="background:linear-gradient(135deg,#1c0e0e,#3d1515)"></div>
+        <div class="name">Rose Dark</div>
+      </div>
+      <div class="theme-swatch" data-theme="light">
+        <div class="preview" style="background:linear-gradient(135deg,#f8fafc,#e2e8f0)"></div>
+        <div class="name">Minimal Light</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="label">Custom Gradient</div>
+    <div class="gradient-row">
+      <div>
+        <div class="label" style="margin:0 0 4px">Start</div><input type="color" id="gradStart" value="#0a0f1e" />
+      </div>
+      <div>
+        <div class="label" style="margin:0 0 4px">End</div><input type="color" id="gradEnd" value="#1e293b" />
+      </div>
+      <div class="gradient-preview" id="gradPreview"></div>
+      <button class="btn btn-primary btn-sm" id="applyGradient">Apply</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="label">🖼️ Stock Wallpapers</div>
+    <div class="wp-grid" id="wpGrid">
+      <div class="wp-thumb" data-bg="bg1.png"><img src="bg1.png"
+          onerror="this.closest('.wp-thumb').style.background='#1e293b'">
+        <div class="wp-num">1</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg2.png"><img src="bg2.png"
+          onerror="this.closest('.wp-thumb').style.background='#1a0533'">
+        <div class="wp-num">2</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg3.png"><img src="bg3.png"
+          onerror="this.closest('.wp-thumb').style.background='#0d1f0d'">
+        <div class="wp-num">3</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg4.png"><img src="bg4.png"
+          onerror="this.closest('.wp-thumb').style.background='#0f172a'">
+        <div class="wp-num">4</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg5.png"><img src="bg5.png"
+          onerror="this.closest('.wp-thumb').style.background='#1a0533'">
+        <div class="wp-num">5</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg6.png"><img src="bg6.png"
+          onerror="this.closest('.wp-thumb').style.background='#2e3440'">
+        <div class="wp-num">6</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg7.png"><img src="bg7.png"
+          onerror="this.closest('.wp-thumb').style.background='#1c0e0e'">
+        <div class="wp-num">7</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg8.png"><img src="bg8.png"
+          onerror="this.closest('.wp-thumb').style.background='#0a0f1e'">
+        <div class="wp-num">8</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg9.png"><img src="bg9.png"
+          onerror="this.closest('.wp-thumb').style.background='#1e293b'">
+        <div class="wp-num">9</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg10.png"><img src="bg10.png"
+          onerror="this.closest('.wp-thumb').style.background='#1a0533'">
+        <div class="wp-num">10</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg11.png"><img src="bg11.png"
+          onerror="this.closest('.wp-thumb').style.background='#0d1f0d'">
+        <div class="wp-num">11</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg12.png"><img src="bg12.png"
+          onerror="this.closest('.wp-thumb').style.background='#0f172a'">
+        <div class="wp-num">12</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg13.png"><img src="bg13.png"
+          onerror="this.closest('.wp-thumb').style.background='#2e3440'">
+        <div class="wp-num">13</div>
+      </div>
+      <div class="wp-thumb" data-bg="bg14.png"><img src="bg14.png"
+          onerror="this.closest('.wp-thumb').style.background='#1c0e0e'">
+        <div class="wp-num">14</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="label">🔗 Image URL</div>
+    <div class="url-row">
+      <input type="text" id="bgUrlInput" placeholder="Paste image URL and press Apply…" />
+      <button class="btn btn-primary btn-sm" id="applyBgUrl">Apply</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="label">Background Image (Upload from device)</div>
+    <div class="upload-area" id="uploadArea">
+      <p>📁 Click or drag an image here</p>
+      <input type="file" id="bgUpload" accept="image/*" style="display:none" />
+    </div>
+    <img id="bgPreview" alt="Background preview" />
+    <div style="display:flex;gap:8px;margin-top:6px" id="bgActions" style="display:none">
+      <button class="btn btn-ghost btn-sm" id="clearBg">✕ Remove Image</button>
+      <a class="btn btn-ghost btn-sm" href="https://unsplash.com/wallpapers" target="_blank">🌎 Get more wallpapers</a>
+    </div>
+  </div>
+
+  <!-- ── BACKGROUND ANIMATION ── -->
+  <div class="settings-section">
+    <h2>✨ Background Animation</h2>
+    <div class="anim-grid" id="animGrid">
+      <div class="anim-btn active" data-anim="none"><span class="anim-icon">⏹️</span>None</div>
+      <div class="anim-btn" data-anim="balls"><span class="anim-icon">⚪</span>Balls</div>
+      <div class="anim-btn" data-anim="waves"><span class="anim-icon">🌊</span>Waves</div>
+      <div class="anim-btn" data-anim="particles"><span class="anim-icon">✨</span>Particles</div>
+      <div class="anim-btn" data-anim="matrix"><span class="anim-icon">💻</span>Matrix</div>
+      <div class="anim-btn" data-anim="ripple"><span class="anim-icon">💧</span>Ripple</div>
+      <div class="anim-btn" data-anim="snow"><span class="anim-icon">❄️</span>Snow</div>
+      <div class="anim-btn" data-anim="aurora"><span class="anim-icon">🌌</span>Aurora</div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:10px">💡 Animations overlay your background — best with dark themes or images.</div>
+  </div>
+
+  <!-- ── SEARCH ── -->
+  <div class="settings-section">
+    <h2>🔍 Default Search Engine</h2>
+      <div class="radio-group" id="engineGroup">
+        <button class="radio-btn active" data-engine="google">Google</button>
+        <button class="radio-btn" data-engine="bing">Bing</button>
+        <button class="radio-btn" data-engine="ddg">DuckDuckGo</button>
+      </div>
+  </div>
+
+  <!-- ── PASSWORD ── -->
+  <div class="settings-section">
+    <h2>🔑 Change Master Password</h2>
+      <div class="pwd-form">
+        <input type="password" id="currentPwd" placeholder="Current password" autocomplete="off" />
+        <input type="password" id="newPwd" placeholder="New password" autocomplete="new-password" />
+        <input type="password" id="confirmPwd" placeholder="Confirm new password" autocomplete="new-password" />
+        <button class="btn btn-primary" id="changePwdBtn">Change Password</button>
+        <div id="pwdMsg" style="font-size:12px;min-height:16px;text-align:center"></div>
+      </div>
+  </div>
+
+  <!-- ── WIDGET VISIBILITY ── -->
+  <div class="settings-section">
+    <h2>📊 New Tab Widgets</h2>
+    <div class="widget-toggles" id="widgetToggles">
+        <div class="wt-item">🍅 Pomodoro<label class="toggle"><input type="checkbox" data-wgt="pom" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">🌤 Weather<label class="toggle"><input type="checkbox" data-wgt="weather" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">📊 Block Stats<label class="toggle"><input type="checkbox" data-wgt="stats" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">📝 Notes<label class="toggle"><input type="checkbox" data-wgt="notes" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">💾 Sessions<label class="toggle"><input type="checkbox" data-wgt="sessions" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">🔢 Calculator<label class="toggle"><input type="checkbox" data-wgt="calc" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">🚫 Blocked Sites<label class="toggle"><input type="checkbox" data-wgt="blocked" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">💬 Quotes<label class="toggle"><input type="checkbox" data-wgt="quotes" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">📸 Screenshot<label class="toggle"><input type="checkbox" data-wgt="screenshot" checked><span
+              class="toggle-slider"></span></label></div>
+        <div class="wt-item">⚡ Speed Test<label class="toggle"><input type="checkbox" data-wgt="speed" checked><span
+              class="toggle-slider"></span></label></div>
+      </div>
+  </div>
+
+  <!-- ── INFO ROW & SIDEBAR CARDS ── -->
+  <div class="settings-section">
+    <h2>🗃️ Info Row &amp; Sidebar Cards</h2>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Toggle the cards shown above the widget grid and the news sidebar. Use this to restore cards hidden via the ✕ button in edit mode.</div>
+    <div class="widget-toggles">
+      <div class="wt-item">🕐 Clock<label class="toggle"><input type="checkbox" data-extra="clock-box" checked><span class="toggle-slider"></span></label></div>
+      <div class="wt-item">💰 Gold Price<label class="toggle"><input type="checkbox" data-extra="goldCard" checked><span class="toggle-slider"></span></label></div>
+      <div class="wt-item">💱 USD → INR<label class="toggle"><input type="checkbox" data-extra="inrCard" checked><span class="toggle-slider"></span></label></div>
+      <div class="wt-item">🏏 Cricket<label class="toggle"><input type="checkbox" data-extra="cricCard" checked><span class="toggle-slider"></span></label></div>
+      <div class="wt-item">🗂 Clusters Panel<label class="toggle"><input type="checkbox" data-extra="clusters-inline" checked><span class="toggle-slider"></span></label></div>
+      <div class="wt-item">📰 News Sidebar<label class="toggle"><input type="checkbox" data-extra="nt-sidebar" checked><span class="toggle-slider"></span></label></div>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn btn-ghost btn-sm" id="resetVisibilityBtn">↺ Reset All to Visible</button>
+    </div>
+  </div>
+
+  <!-- ── ADVANCED ── -->
+  <div class="settings-section">
+    <h2>🛡️ Advanced</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="ttl">HTTPS Warning Banner</div>
+          <div class="sub">Show a warning on HTTP sites</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="httpsToggle" checked><span
+            class="toggle-slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="ttl">Context Menu Items</div>
+          <div class="sub">Right-click: Block site, Dark mode, Screenshot</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="ctxMenuToggle" checked><span
+            class="toggle-slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="ttl">Ad Blocker</div>
+          <div class="sub">Block 48 ad & tracker domains</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="adToggleSettings"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div class="setting-info">
+          <div class="ttl">🏏 CricAPI Key <span style="font-size:10px;color:var(--text-dim)">(live cricket scores)</span></div>
+          <div class="sub">Free key at <a href="https://cricapi.com" target="_blank" style="color:var(--accent)">cricapi.com</a> — 100 calls/day free</div>
+        </div>
+        <div style="display:flex;gap:8px;width:100%">
+          <input type="text" id="cricApiKeyInput" placeholder="Paste your CricAPI key…" style="flex:1;font-size:12px" />
+          <button class="btn btn-primary btn-sm" id="saveCricKey">Save</button>
+        </div>
+        <div id="cricKeyMsg" style="font-size:11px;min-height:14px;color:var(--success)"></div>
+      </div>
+  </div>
+
+  <!-- ── DATA MANAGEMENT ── -->
+  <div class="settings-section">
+    <h2>🗄️ Data Management</h2>
+      <div class="data-btns">
+        <button class="btn btn-ghost" id="exportBtn">⬇️ Export Data</button>
+        <button class="btn btn-ghost" id="importBtn">⬆️ Import Data</button>
+        <button class="btn btn-danger" id="clearAllBtn">🗑 Clear All Data</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none" />
+      <div class="divider"></div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.7">
+        <strong>Export</strong> saves all your blocked sites, sessions, clusters, notes, and settings.<br />
+        <strong>Clear All Data</strong> is irreversible — you will be asked to confirm.
+      </div>
+  </div>
+
+  <!-- BACK LINK -->
+  <div style="text-align:center;margin-top:24px">
+    <a href="newtab.html" style="color:var(--text-muted);font-size:13px;text-decoration:none">← Back to Dashboard</a>
+  </div>
+
+  <div id="toast">✅ Saved</div>
+  <script src="settings.js"></script>
+</body>
+</html>

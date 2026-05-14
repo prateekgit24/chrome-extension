@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New Tab — Extensive Z</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body{margin:0;min-height:100vh;background:var(--bg);background-image:radial-gradient(ellipse at 15% 40%,rgba(99,102,241,.13) 0%,transparent 55%),radial-gradient(ellipse at 85% 15%,rgba(34,211,238,.08) 0%,transparent 50%);overflow-x:hidden;display:grid;grid-template-columns:1fr 270px;grid-template-rows:auto;}
+    .nt-main{padding:22px 24px 20px;display:flex;flex-direction:column;gap:18px;min-height:100vh;overflow-y:auto;}
+    /* Sidebar */
+    .nt-sidebar{background:rgba(10,15,35,.78);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:18px 16px;overflow-y:auto;align-self:start;margin-top:130px;margin-right:20px;min-height:480px;max-height:680px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.35);}
+    .sidebar-hdr{font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+    .news-item img{ width:100%; height:130px; object-fit:cover; border-radius:8px; margin-bottom:7px; background:rgba(255,255,255,.05); display:block; }
+    .news-meta{font-size:10px;color:rgba(255,255,255,.4);}
+    /* Top bar */
+    .nt-topbar{display:flex;align-items:center;gap:16px;}
+    .clock-box{background:rgba(14,22,40,.75);backdrop-filter:blur(16px);border:1px solid var(--border-2);border-radius:var(--radius-lg);padding:14px 20px;flex-shrink:0;}
+    #clock-time{font-size:38px;font-weight:800;letter-spacing:-1px;color:var(--text);font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(99,102,241,.5);line-height:1;}
+    #clock-date{font-size:11.5px;color:var(--accent-2);margin-top:3px;letter-spacing:.3px;}
+    #clock-greet{font-size:11px;color:var(--text-muted);margin-top:1px;}
+    /* Search center */
+    .search-center{flex:1;}
+    .search-wrap{position:relative;display:flex;align-items:center;}
+    .search-prefix{position:absolute;left:18px;font-size:18px;opacity:.5;pointer-events:none;z-index:1;}
+    #searchInput{width:100%;padding:15px 100px 15px 50px;border-radius:99px;font-size:15px;background:rgba(255,255,255,.07);backdrop-filter:blur(20px);border:1.5px solid rgba(99,102,241,.35);color:var(--text);outline:none;transition:var(--tx3);box-shadow:0 0 0 0 transparent;}
+    #searchInput:hover{border-color:rgba(99,102,241,.55);background:rgba(255,255,255,.09);}
+    #searchInput:focus{background:rgba(255,255,255,.1);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow),0 8px 40px rgba(0,0,0,.4),inset 0 0 0 1px rgba(34,211,238,.15);}
+    .search-actions{position:absolute;right:10px;display:flex;gap:5px;align-items:center;}
+    .sab{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tx);}
+    .sab:hover{background:rgba(99,102,241,.2);color:var(--accent);border-color:var(--accent);}
+    #voiceBtn.listening{background:rgba(239,68,68,.2);color:var(--danger);border-color:var(--danger);animation:pulse 1s infinite;}
+    .engine-row{display:flex;gap:6px;justify-content:center;margin-top:8px;}
+    .eng-btn{padding:4px 13px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text-muted);font-size:11px;cursor:pointer;transition:var(--tx);}
+    .eng-btn:hover{color:var(--text);border-color:var(--border-2);}
+    .eng-btn.active{background:rgba(99,102,241,.15);border-color:var(--accent);color:var(--accent);}
+    /* Edit mode button */
+    .edit-mode-btn{position:fixed;top:20px;right:20px;z-index:300;width:40px;height:40px;border-radius:50%;background:rgba(10,15,35,.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);color:var(--text-muted);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tx);box-shadow:0 4px 16px rgba(0,0,0,.4);}
+    .edit-mode-btn:hover{background:rgba(99,102,241,.2);border-color:var(--accent);color:var(--accent);}
+    .edit-mode-btn.active{background:rgba(99,102,241,.2);border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px var(--accent-glow);}
+    /* Info cards row */
+    .info-row{display:flex;gap:12px;align-items:stretch;}
+    .info-cards{display:flex;gap:10px;flex-shrink:0;}
+    .info-card{background:rgba(14,22,40,.8);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;min-width:130px;transition:var(--tx3);position:relative;overflow:hidden;}
+    .info-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad-accent);opacity:.7;}
+    .info-card:hover{border-color:var(--border-2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+    .ic-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+    .ic-val{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;}
+    .ic-sub{font-size:10.5px;color:var(--text-muted);margin-top:3px;}
+    .gold-val{background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .inr-val{background:linear-gradient(135deg,#34d399,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .cric-val{font-size:13px;color:var(--accent-2);line-height:1.4;}
+    /* Clusters inline */
+    .clusters-inline{flex:1;background:rgba(14,22,40,.8);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:var(--radius);padding:14px;overflow:hidden;}
+    /* ── Edit mode ── */
+    body.edit-mode .widget { outline: 2px dashed rgba(99,102,241,.35); }
+    body.edit-mode .widget:hover { outline-color: var(--accent); }
+
+    /* Old remove btn — hidden, replaced by .widget-controls */
+    .widget-remove { display: none !important; }
+
+    /* Widget control overlay (top-right, shown in edit mode) */
+    .widget-controls {
+      display: none;
+      position: absolute; top: 8px; right: 8px;
+      gap: 5px; z-index: 20; align-items: center;
+    }
+    body.edit-mode .widget-controls { display: flex; }
+    .wc-btn {
+      width: 26px; height: 26px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 13px; border: none;
+      backdrop-filter: blur(8px); transition: transform .15s, opacity .15s;
+    }
+    .wc-btn:hover { transform: scale(1.15); opacity: 1 !important; }
+    .wc-remove { background: rgba(239,68,68,.85); color: #fff; }
+    .wc-remove:hover { background: #ef4444; }
+    .wc-resize {
+      background: rgba(99,102,241,.8); color: #fff;
+      font-size: 15px; font-weight: 700; line-height: 1;
+    }
+    .wc-resize:hover { background: var(--accent); }
+    .wc-resize.is-wide { background: rgba(99,102,241,1); box-shadow: 0 0 8px rgba(99,102,241,.6); }
+    /* Drag handle */
+    .drag-handle { cursor:grab; color:rgba(255,255,255,.55); font-size:15px; padding:2px 5px; border-radius:5px; background:rgba(255,255,255,.1); user-select:none; display:flex; align-items:center; }
+    .drag-handle:active { cursor:grabbing; }
+    /* In edit mode let overflow show controls above */
+    body.edit-mode .widget { overflow: visible; }
+
+    /* Edit mode controls for info-row cards, clock, clusters, sidebar */
+    .info-card { position: relative; }
+    body.edit-mode .info-card { overflow: visible; }
+    .clusters-inline { position: relative; }
+    .clock-box { position: relative; }
+    body.edit-mode .info-card .widget-controls,
+    body.edit-mode .clusters-inline .widget-controls,
+    body.edit-mode .clock-box .widget-controls,
+    body.edit-mode .nt-sidebar .widget-controls { display: flex !important; }
+
+    /* Edit-mode-btn active glow */
+    .edit-mode-btn.active {
+      background: rgba(99,102,241,.25) !important;
+      border-color: var(--accent) !important;
+      color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(99,102,241,.3), 0 0 20px rgba(99,102,241,.45) !important;
+      animation: editGlow 2s ease-in-out infinite;
+    }
+    @keyframes editGlow {
+      0%,100% { box-shadow: 0 0 0 3px rgba(99,102,241,.3), 0 0 18px rgba(99,102,241,.4); }
+      50%      { box-shadow: 0 0 0 4px rgba(99,102,241,.5), 0 0 30px rgba(99,102,241,.65); }
+    }
+    /* Quote widget */
+    .quote-text{font-size:14px;font-style:italic;color:var(--text);line-height:1.6;margin-bottom:8px;}
+    .quote-author{font-size:11px;color:var(--text-muted);text-align:right;}
+
+    /* ── Hero Section ── */
+    .nt-hero {
+      text-align: center;
+      padding: 36px 20px 28px;
+      position: relative;
+    }
+    #clock-greet {
+      font-size: 15px; font-weight: 500; color: var(--text-muted);
+      margin-bottom: 4px; letter-spacing: .3px;
+    }
+    #clock-time {
+      font-size: 68px; font-weight: 800; letter-spacing: -3px;
+      background: linear-gradient(135deg,#fff 40%,var(--accent-2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 4px;
+    }
+    #clock-date { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* Search */
+    .search-hero { max-width: 600px; margin: 0 auto; }
+    .search-wrap { position: relative; display: flex; align-items: center; }
+    .search-prefix {
+      position: absolute; left: 18px; font-size: 18px; opacity: .5; pointer-events: none; z-index:1;
+    }
+    #searchInput {
+      width: 100%; padding: 16px 110px 16px 50px;
+      border-radius: 99px; font-size: 15px;
+      background: rgba(8,12,28,.65);
+      backdrop-filter: blur(24px);
+      border: 1.5px solid rgba(99,102,241,.55);
+      color: var(--text);
+      outline: none; transition: var(--tx3);
+      box-shadow: 0 0 0 1px rgba(99,102,241,.15), 0 4px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    #searchInput:hover {
+      background: rgba(8,12,28,.75);
+      border-color: rgba(99,102,241,.75);
+    }
+    #searchInput:focus {
+      background: rgba(8,12,28,.8);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow), 0 0 40px rgba(99,102,241,.25), 0 8px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .search-actions {
+      position: absolute; right: 10px;
+      display: flex; gap: 5px; align-items: center;
+    }
+    .sab {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,.06); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--tx);
+    }
+    .sab:hover { background: rgba(99,102,241,.2); color: var(--accent); border-color: var(--accent); }
+    #voiceBtn.listening { background: rgba(239,68,68,.2); color: var(--danger); animation: pulse 1s infinite; }
+    .engine-row { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+    .eng-btn {
+      padding: 5px 14px; border-radius: 99px;
+      background: rgba(8,12,28,.6);
+      border: 1px solid rgba(99,102,241,.3);
+      color: rgba(255,255,255,.65); font-size: 11px; cursor: pointer;
+      transition: var(--tx); backdrop-filter: blur(10px);
+    }
+    .eng-btn:hover { color: rgba(255,255,255,.9); border-color: rgba(99,102,241,.6); background: rgba(8,12,28,.8); }
+    .eng-btn.active { background: rgba(99,102,241,.25); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 8px rgba(99,102,241,.2); }
+
+    /* ── Widget Grid ── */
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .widget {
+      background: rgba(10,15,35,.68);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 16px;
+      padding: 18px;
+      transition: var(--tx3);
+      animation: fadeIn .4s ease backwards;
+      position: relative; overflow: hidden;
+    }
+    .widget::before {
+      content: ''; position: absolute; inset: 0; border-radius: var(--radius);
+      background: linear-gradient(145deg,rgba(255,255,255,.025) 0%,transparent 60%);
+      pointer-events: none;
+    }
+    .widget:hover { border-color: var(--border-2); transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(0,0,0,.4), 0 0 20px rgba(99,102,241,.08); }
+    .widget.wide { grid-column: span 2; }
+    .widget.dragging { opacity:.5; transform:scale(.97); border-color:var(--accent); }
+    .widget.drag-over { border-color:var(--accent-2); box-shadow:0 0 20px var(--accent-glow2); }
+    .drag-handle {
+      cursor: grab; color: var(--text-dim); font-size: 13px; opacity: 0;
+      transition: opacity .2s; padding: 0 2px;
+    }
+    .widget:hover .drag-handle { opacity: 1; }
+    .drag-handle:active { cursor: grabbing; }
+    /* News sidebar — stacked layout: image on top, title below */
+    .news-item { display:block; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+    .news-item:last-child { border-bottom:none; padding-bottom:0; }
+    .news-item a { display:block; font-size:12.5px; font-weight:500; color:rgba(255,255,255,.88); text-decoration:none; line-height:1.45; margin-bottom:4px; }
+    .news-item a:hover { color:var(--accent); }
+    .news-item img { width:100%; height:130px; object-fit:cover; border-radius:8px; margin-bottom:7px; background:var(--surface-2); display:block; }
+    .news-meta { font-size:10px; color:var(--text-muted); }
+    /* Gold widget */
+    .gold-price { font-size:34px; font-weight:800; font-variant-numeric:tabular-nums;
+      background:linear-gradient(135deg,#fbbf24,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .gold-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+    .metal-row { display:flex; justify-content:space-between; align-items:center;
+      padding:7px 0; border-bottom:1px solid var(--border); font-size:13px; }
+    .metal-row:last-child { border-bottom:none; }
+    .metal-val { font-weight:600; font-variant-numeric:tabular-nums; }
+    .metal-chg.up   { color:var(--success); font-size:11px; }
+    .metal-chg.down { color:var(--danger);  font-size:11px; }
+    /* Cricket widget */
+    .match-card { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm);
+      padding:10px 12px; margin-bottom:8px; }
+    .match-teams { font-size:13px; font-weight:600; margin-bottom:3px; }
+    .match-score { font-size:12px; color:var(--accent-2); font-variant-numeric:tabular-nums; }
+    .match-status { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    /* Firewall status */
+    .fw-row { display:flex; align-items:center; justify-content:space-between;
+      padding:8px 0; border-bottom:1px solid var(--border); font-size:12px; }
+    .fw-row:last-child { border-bottom:none; }
+    .fw-val { font-weight:600; }
+    .fw-ok  { color:var(--success); }
+    .fw-off { color:var(--text-muted); }
+
+    .wh { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .wh h3 { font-size: 13px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .accent-line { height: 2px; background: linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius: 2px; margin-top: 12px; }
+
+    /* Stagger animation */
+    .widget:nth-child(1)  { animation-delay: .05s; }
+    .widget:nth-child(2)  { animation-delay: .10s; }
+    .widget:nth-child(3)  { animation-delay: .15s; }
+    .widget:nth-child(4)  { animation-delay: .20s; }
+    .widget:nth-child(5)  { animation-delay: .25s; }
+    .widget:nth-child(6)  { animation-delay: .30s; }
+    .widget:nth-child(7)  { animation-delay: .35s; }
+    .widget:nth-child(8)  { animation-delay: .40s; }
+    .widget:nth-child(9)  { animation-delay: .45s; }
+
+    /* ── Pomodoro Widget ── */
+    .pom-ring-wrap { position:relative; width:110px; height:110px; margin: 0 auto 10px; display:flex; align-items:center; justify-content:center; }
+    .pom-svg { width:110px; height:110px; transform:rotate(-90deg); position:absolute; }
+    .pom-bg   { fill:none; stroke:var(--surface-2); stroke-width:8; }
+    .pom-prog { fill:none; stroke:url(#pomGrad); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1s linear; }
+    .pom-center { position:absolute; text-align:center; }
+    .pom-time  { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+    .pom-lbl   { font-size:10px; color:var(--text-muted); }
+    .pom-btns  { display:flex; gap:6px; justify-content:center; margin-top:8px; }
+    .pom-toms  { display:flex; gap:4px; justify-content:center; margin:6px 0; }
+    .ptom { font-size:13px; opacity:.25; transition:opacity .3s; }
+    .ptom.done { opacity:1; }
+
+    /* ── Weather Widget ── */
+    #weather-temp { font-size:38px; font-weight:700; text-shadow:0 0 14px rgba(56,189,248,.5); }
+    #weather-desc { font-size:13px; color:var(--accent-2); text-transform:capitalize; margin-top:3px; }
+    #weather-city { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+    /* ── Block Stats Widget ── */
+    .bar-item { margin-bottom:10px; }
+    .bar-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px; }
+    .bar-track { height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden; }
+    .bar-fill  { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:99px; transition:width .6s ease; }
+
+    /* ── Clusters Widget ── */
+    .cl-nt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; }
+    .cl-nt-card { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; cursor:pointer; transition:var(--tx3); text-align:center; }
+    .cl-nt-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+    .cl-nt-em  { font-size:20px; margin-bottom:4px; }
+    .cl-nt-nm  { font-size:12px; font-weight:600; }
+    .cl-nt-ct  { font-size:10px; color:var(--text-muted); margin-top:2px; }
+
+    /* ── Notes Widget ── */
+    #noteInput { resize:none; height:52px; font-size:13px; border-radius:var(--radius-sm); }
+    .note-add-btn { width:100%; margin-top:6px; }
+    .notes-list { max-height:180px; overflow-y:auto; margin-top:8px; }
+    .note-item { display:flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--border); padding:8px 10px; border-radius:var(--radius-sm); margin-bottom:5px; }
+    .note-item input[type="checkbox"] { flex-shrink:0; width:15px; height:15px; cursor:pointer; accent-color:var(--accent); }
+    .note-text  { flex:1; min-width:0; font-size:12px; line-height:1.5; word-break:break-word; overflow-wrap:break-word; }
+    .note-text.done { opacity:.45; text-decoration:line-through; }
+    .note-del  { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:14px; padding:0 2px; transition:color .2s; flex-shrink:0; line-height:1; }
+    .note-del:hover { color:var(--danger); }
+
+    /* ── Sessions Widget ── */
+    .nt-sess-item { display:flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--border); padding:8px 10px; border-radius:var(--radius-sm); margin-bottom:6px; font-size:12px; }
+    .nt-sess-info { flex:1; overflow:hidden; }
+    .nt-sess-nm   { font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .nt-sess-ct   { font-size:10px; color:var(--text-muted); margin-top:1px; }
+
+    /* ── Quick Calc Widget ── */
+    .nt-calc-disp { background:var(--surface-3); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 11px; text-align:right; margin-bottom:7px; }
+    .nt-calc-expr { font-size:11px; color:var(--text-muted); min-height:14px; }
+    .nt-calc-res  { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+    .nt-calc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
+    .nc { padding:9px 3px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); font-size:13px; cursor:pointer; transition:var(--tx); font-family:inherit; }
+    .nc:hover { background:var(--surface); }
+    .nc:active { transform:scale(.93); }
+    .nc.op { color:var(--accent-2); }
+    .nc.eq { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .nc.cl { color:var(--danger); }
+    .nc.w2 { grid-column:span 2; }
+
+    /* ── Blocked Sites Widget ── */
+    .bl-item { display:flex; align-items:center; gap:6px; font-size:12px; padding:6px 9px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:5px; }
+    .bl-badge { font-size:10px; padding:1px 6px; border-radius:99px; background:rgba(16,185,129,.15); color:var(--success); margin-left:auto; white-space:nowrap; }
+
+    /* ── Footer ── */
+    footer { text-align:center; margin-top:32px; color:var(--text-dim); font-size:12px; }
+    footer a { color:var(--text-muted); text-decoration:none; transition:color .2s; }
+    footer a:hover { color:var(--accent); }
+  </style>
+</head>
+<body>
+
+<button class="edit-mode-btn" id="editModeBtn" title="Edit layout">✏️</button>
+<div class="nt-main">
+<!-- ── TOP BAR ── -->
+<div class="nt-topbar">
+  <div class="clock-box">
+    <div class="widget-controls"><button class="wc-btn wc-remove" title="Hide" data-hid="clock-box">✕</button></div>
+    <div id="clock-time">--:--:--</div>
+    <div id="clock-date">Loading…</div>
+    <div id="clock-greet"></div>
+  </div>
+  <div class="search-center">
+    <div class="search-wrap">
+      <span class="search-prefix">🔍</span>
+      <input id="searchInput" type="text" placeholder="Search or enter URL…" autocomplete="off" />
+      <div class="search-actions">
+        <button class="sab" id="voiceBtn" title="Voice search">🎤</button>
+        <button class="sab" id="searchBtn" title="Search">↵</button>
+      </div>
+    </div>
+    <div class="engine-row">
+      <button class="eng-btn active" data-engine="google">Google</button>
+      <button class="eng-btn" data-engine="bing">Bing</button>
+      <button class="eng-btn" data-engine="ddg">DuckDuckGo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INFO CARDS ROW ── -->
+<div class="info-row">
+  <div class="info-cards">
+    <div class="info-card" id="goldCard">
+      <div class="widget-controls"><button class="wc-btn wc-remove" title="Hide" data-hid="goldCard">✕</button></div>
+      <div class="ic-label">Gold (USD/g)</div>
+      <div class="ic-val gold-val" id="goldVal">--</div>
+      <div class="ic-sub" id="goldSub">Loading…</div>
+    </div>
+    <div class="info-card" id="inrCard">
+      <div class="widget-controls"><button class="wc-btn wc-remove" title="Hide" data-hid="inrCard">✕</button></div>
+      <div class="ic-label">USD → INR</div>
+      <div class="ic-val inr-val" id="inrVal">--</div>
+      <div class="ic-sub" id="inrSub">Loading…</div>
+    </div>
+    <div class="info-card" id="cricCard">
+      <div class="widget-controls"><button class="wc-btn wc-remove" title="Hide" data-hid="cricCard">✕</button></div>
+      <div class="ic-label">🏏 Cricket</div>
+      <div class="cric-val" id="cricVal">Loading…</div>
+    </div>
+  </div>
+  <div class="clusters-inline">
+    <div class="widget-controls"><button class="wc-btn wc-remove" title="Hide" data-hid="clusters-inline">✕</button></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">🗂 Clusters</div>
+    <div class="cl-nt-grid" id="clNtGrid"><div class="empty">No clusters — create in popup</div></div>
+  </div>
+</div>
+
+<!-- ═══ WIDGET GRID ═══ -->
+<div class="widget-grid" id="widgetGrid">
+
+  <!-- 1. Pomodoro Timer -->
+  <div class="widget" id="wgt-pom" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>🍅 Pomodoro</h3><span class="badge badge-accent" id="pomCountBadge">0 today</span></div>
+    <div class="pom-ring-wrap">
+      <svg class="pom-svg" viewBox="0 0 110 110">
+        <defs>
+          <linearGradient id="pomGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#22d3ee"/>
+          </linearGradient>
+        </defs>
+        <circle class="pom-bg"   cx="55" cy="55" r="46"/>
+        <circle class="pom-prog" cx="55" cy="55" r="46" id="pomRing" style="stroke-dasharray:289.03;stroke-dashoffset:0"/>
+      </svg>
+      <div class="pom-center">
+        <div class="pom-time" id="pomDisplay">25:00</div>
+        <div class="pom-lbl"  id="pomLbl">Ready</div>
+      </div>
+    </div>
+    <div class="pom-toms" id="pomToms">
+      <span class="ptom">🍅</span><span class="ptom">🍅</span>
+      <span class="ptom">🍅</span><span class="ptom">🍅</span>
+    </div>
+    <div class="pom-btns">
+      <button class="btn btn-primary btn-sm" id="pomStart">▶ Start</button>
+      <button class="btn btn-ghost btn-sm"   id="pomPause" disabled>⏸</button>
+      <button class="btn btn-danger btn-sm"  id="pomStop"  disabled>■</button>
+    </div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- 2. Weather -->
+  <div class="widget" id="wgt-weather" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>🌤 Weather</h3><span style="font-size:10px;color:var(--text-dim)" id="weatherUpdated"></span></div>
+    <div id="weather-temp">--°</div>
+    <div id="weather-desc">Fetching…</div>
+    <div id="weather-city"></div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- 3. Block Stats -->
+  <div class="widget" id="wgt-stats" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh">
+      <h3>📊 Blocked Today</h3>
+      <button class="btn btn-ghost btn-sm" id="clearStatsBtn" style="font-size:10px">Clear</button>
+    </div>
+    <div id="statsContent"><div class="empty">No blocked attempts today 🎉</div></div>
+    <div class="accent-line"></div>
+  </div>
+
+
+
+  <!-- 5. Notes / Todo -->
+  <div class="widget" id="wgt-notes" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>📝 Notes & Tasks</h3><span id="noteCount" style="font-size:11px;color:var(--text-muted)"></span></div>
+    <textarea id="noteInput" placeholder="Write a note and press Enter…" rows="2"></textarea>
+    <div class="notes-list" id="notesList"></div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- 6. Sessions -->
+  <div class="widget" id="wgt-sessions" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>💾 Saved Sessions</h3></div>
+    <div id="ntSessList"><div class="empty">No saved sessions yet</div></div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- 7. Quick Calculator -->
+  <div class="widget" id="wgt-calc" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>🔢 Calculator</h3></div>
+    <div class="nt-calc-disp">
+      <div class="nt-calc-expr" id="ntCalcExpr">&nbsp;</div>
+      <div class="nt-calc-res"  id="ntCalcRes">0</div>
+    </div>
+    <div class="nt-calc-grid">
+      <button class="nc cl" data-nc="C">C</button>
+      <button class="nc"    data-nc="back">⌫</button>
+      <button class="nc op" data-nc="%">%</button>
+      <button class="nc op" data-nc="/">÷</button>
+      <button class="nc" data-nc="7">7</button><button class="nc" data-nc="8">8</button>
+      <button class="nc" data-nc="9">9</button><button class="nc op" data-nc="*">×</button>
+      <button class="nc" data-nc="4">4</button><button class="nc" data-nc="5">5</button>
+      <button class="nc" data-nc="6">6</button><button class="nc op" data-nc="-">−</button>
+      <button class="nc" data-nc="1">1</button><button class="nc" data-nc="2">2</button>
+      <button class="nc" data-nc="3">3</button><button class="nc op" data-nc="+">+</button>
+      <button class="nc w2" data-nc="0">0</button>
+      <button class="nc" data-nc=".">.</button>
+      <button class="nc eq" data-nc="=">=</button>
+    </div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- 8. Blocked Sites -->
+  <div class="widget" id="wgt-blocked" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>🚫 Blocked Sites</h3><span class="badge badge-danger" id="blCount">0</span></div>
+    <div id="blList"><div class="empty">No sites blocked</div></div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- Quotes widget -->
+  <div class="widget" id="wgt-quotes" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>💬 Quote of the Day</h3><button class="btn btn-ghost btn-sm" id="newQuoteBtn" style="font-size:10px">New</button></div>
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-author" id="quoteAuthor"></div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- Screenshot widget -->
+  <div class="widget" id="wgt-screenshot" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>📸 Screenshot</h3></div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">
+      💡 <strong style="color:var(--text)">How to use:</strong><br>
+      1. Browse to the page you want to capture<br>
+      2. Click the <strong style="color:var(--accent)">Extensive Z</strong> extension icon<br>
+      3. The popup has a 📸 button that captures the current tab.
+    </div>
+    <button class="btn btn-primary" id="screenshotBtn" style="width:100%">📸 Capture Active Tab</button>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center">Opens screenshot in a new tab</div>
+    <div class="accent-line"></div>
+  </div>
+
+  <!-- Speed Test widget -->
+  <div class="widget" id="wgt-speed" draggable="true">
+    <div class="widget-controls"><span class="drag-handle" title="Drag">&#8942;&#8942;</span><button class="wc-btn wc-resize" title="Toggle wide">⧉</button><button class="wc-btn wc-remove" title="Hide">✕</button></div>
+    <div class="wh"><h3>⚡ Internet Speed</h3><button class="btn btn-ghost btn-sm" id="speedTestBtn" style="font-size:10px">▶ Test</button></div>
+    <div id="speedResult" style="text-align:center;padding:10px 0">
+      <div style="font-size:28px;font-weight:800;font-variant-numeric:tabular-nums" id="speedVal">—</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px" id="speedUnit">Mbps download</div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:4px" id="speedStatus">Click ▶ to test</div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:10px;font-size:11px;color:var(--text-muted)">
+      <span>↓ <b id="speedDL">—</b> Mbps</span>
+      <span style="margin-left:auto">📍 <span id="speedPing">—</span> ms ping</span>
+    </div>
+    <div class="accent-line"></div>
+  </div>
+
+</div><!-- end widget-grid -->
+
+<footer style="text-align:center;margin-top:28px;padding-bottom:24px;">
+  <div style="display:inline-flex;align-items:center;gap:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:8px 20px;font-size:12px;">
+    <a href="settings.html" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#6366f1'" onmouseout="this.style.color='rgba(255,255,255,.75)'">⚙️ Settings</a>
+    <span style="color:rgba(255,255,255,.25)">·</span>
+    <span style="color:rgba(255,255,255,.45)">Extensive Z v2.0</span>
+    <span style="color:rgba(255,255,255,.25)">·</span>
+    <a href="#" id="darkModeToggle" style="color:rgba(255,255,255,.75);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#22d3ee'" onmouseout="this.style.color='rgba(255,255,255,.75)'">🌙 Dark Mode</a>
+  </div>
+  <div style="margin-top:10px;">
+    <span id="editHint" style="display:none;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:6px 14px;font-size:11px;color:var(--accent);">✏️ Drag to reorder · ✕ to hide · Resize bar at bottom</span>
+  </div>
+</footer>
+
+</div><!-- end nt-main -->
+
+<!-- ═══ NEWS SIDEBAR ═══ -->
+<div class="nt-sidebar">
+  <div class="widget-controls" style="position:absolute;top:8px;right:8px;"><button class="wc-btn wc-remove" title="Hide" data-hid="nt-sidebar">✕</button></div>
+  <div class="sidebar-hdr">📰 Latest News <span id="newsTs" style="margin-left:auto;font-weight:400"></span></div>
+  <div id="newsListSidebar"><div class="empty">Loading…</div></div>
+</div>
+
+<script src="animations.js"></script>
+<script src="newtab.js"></script>
+</body>
+</html>
